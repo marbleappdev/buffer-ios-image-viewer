@@ -177,7 +177,7 @@
     singleSVTap.numberOfTapsRequired = 1;
     singleSVTap.cancelsTouchesInView = NO;
     [sv addGestureRecognizer:singleSVTap];
-    
+
     return sv;
 }
 
@@ -289,7 +289,7 @@
     
     // Sizes
     CGSize boundsSize = self.scrollView.bounds.size;
-    CGSize imageSize = self.activeAssetView.frame.size;
+    CGSize imageSize = self.imgLoaded.size;
     
     // Calculate Min
     CGFloat xScale = boundsSize.width / imageSize.width;
@@ -297,15 +297,8 @@
     CGFloat minScale = MIN(xScale, yScale);
     
     // Calculate Max
-    CGFloat maxScale = 4.0;
-    if ([UIScreen instancesRespondToSelector:@selector(scale)]) {
-        maxScale = maxScale / [[UIScreen mainScreen] scale];
-        
-        if (maxScale < minScale) {
-            maxScale = minScale * 2;
-        }
-    }
-    
+    CGFloat maxScale = MAX(xScale, yScale);
+
     // Apply zoom
     self.scrollView.maximumZoomScale = maxScale;
     self.scrollView.minimumZoomScale = minScale;
@@ -351,6 +344,7 @@
     
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         [self.animator removeAllBehaviors];
+        [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
         
         CGPoint location = [recognizer locationInView:self.scrollView];
         CGPoint imgLocation = [recognizer locationInView:self.activeAssetView];
