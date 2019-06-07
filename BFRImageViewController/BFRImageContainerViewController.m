@@ -177,7 +177,7 @@
     singleSVTap.numberOfTapsRequired = 1;
     singleSVTap.cancelsTouchesInView = NO;
     [sv addGestureRecognizer:singleSVTap];
-
+    
     return sv;
 }
 
@@ -289,7 +289,7 @@
     
     // Sizes
     CGSize boundsSize = self.scrollView.bounds.size;
-    CGSize imageSize = self.imgLoaded.size;
+    CGSize imageSize = self.activeAssetView.frame.size;
     
     // Calculate Min
     CGFloat xScale = boundsSize.width / imageSize.width;
@@ -297,8 +297,15 @@
     CGFloat minScale = MIN(xScale, yScale);
     
     // Calculate Max
-    CGFloat maxScale = MAX(xScale, yScale);
-
+    CGRect aspectFillRect = AVMakeRectWithAspectRatioInsideRect(self.imgLoaded.size, self.scrollView.bounds);
+    CGFloat maxScale = 0;
+    
+    if (ceilf(CGRectGetWidth(aspectFillRect)) == ceilf(CGRectGetWidth(self.scrollView.bounds))) {
+        maxScale = (boundsSize.height / CGRectGetHeight(aspectFillRect));
+    } else {
+        maxScale = (boundsSize.width / CGRectGetWidth(aspectFillRect));
+    }
+    
     // Apply zoom
     self.scrollView.maximumZoomScale = maxScale;
     self.scrollView.minimumZoomScale = minScale;
